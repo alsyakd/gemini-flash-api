@@ -27,7 +27,7 @@ async function callGemini(fn, retries = 4, delay = 1000) {
       retries > 0
     ) {
       console.log(`Retrying in ${delay}ms...`);
-      await new Promise(res => setTimeout(res, delay));
+      await new Promise((res) => setTimeout(res, delay));
       return callGemini(fn, retries - 1, delay * 2);
     }
     throw err;
@@ -35,7 +35,7 @@ async function callGemini(fn, retries = 4, delay = 1000) {
 }
 
 app.use(async (req, res, next) => {
-  await new Promise(r => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 500));
   next();
 });
 
@@ -52,7 +52,7 @@ app.post("/generate-text", async (req, res) => {
       ai.models.generateContent({
         model: GEMINI_MODEL,
         contents: prompt,
-      })
+      }),
     );
 
     res.status(200).json({ result: response.text });
@@ -89,8 +89,7 @@ app.post(
           contents: [
             {
               text:
-                req.body.prompt ||
-                "Analyze this document and give insights",
+                req.body.prompt || "Analyze this document and give insights",
             },
             {
               inlineData: {
@@ -99,7 +98,7 @@ app.post(
               },
             },
           ],
-        })
+        }),
       );
 
       res.status(200).json({ result: response.text });
@@ -110,7 +109,7 @@ app.post(
         message: "AI lagi overload, coba lagi ya 🙏",
       });
     }
-  }
+  },
 );
 
 app.post("/generate-from-audio", upload.single("audio"), async (req, res) => {
@@ -121,13 +120,16 @@ app.post("/generate-from-audio", upload.single("audio"), async (req, res) => {
     const response = await ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [
-        { text: prompt ?? "Analyze this audio and give insights.", type: "text" },
+        {
+          text: prompt ?? "Analyze this audio and give insights.",
+          type: "text",
+        },
         {
           inlineData: {
             data: base64Audio,
-            mimeType: req.file.mimetype
-          }
-        }
+            mimeType: req.file.mimetype,
+          },
+        },
       ],
     });
 
